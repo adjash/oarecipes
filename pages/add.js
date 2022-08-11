@@ -9,17 +9,22 @@ export default function add() {
     const [rIngredients, setRIngredients] = useState([]);
     const [rSteps, setRSteps] = useState([]);
 
-
     function handleSubmit(e){
         e.preventDefault();
         if (!rTitle || !rTimings || !rIngredients || !rSteps) {
             alert('Please enter all required fields');
+        }else {
+            setDoc(doc(db, "Recipes/", rTitle), {
+                name: rTitle,
+                timings: rTimings,
+                ingredients: rIngredients[1],
+                steps: rSteps[1]
+            });  
         }
-        let newRecipe = new Recipe(rTitle, rTimings, rIngredients[1], rSteps[1]);
-        setDoc(doc(db, "recipes", rTitle), {newRecipe});
-
+        //Firestore doesn't support custom objects apparently, will come back to creating an object later.
+        /*let newRecipe = new Recipe(rTitle, rTimings, rIngredients[1], rSteps[1]);*/
+        
         return console.log("document uploaded")
-
     }
     function handleChange(e){
         switch(e.target.name){
@@ -42,7 +47,7 @@ export default function add() {
             break;
         }
     }
-  return (
+    return (
     <section>
         <form onSubmit={handleSubmit}>
             <label>Name: <input name="title" type="text" placeholder='recipe title' onChange={handleChange} required/></label>
@@ -54,5 +59,5 @@ export default function add() {
             <input type="submit" value="submit"/>
         </form>
     </section>
-  )
+    )
 }

@@ -5,31 +5,32 @@ import { db, storage } from '../firebase/config';
 
 export default function list() {
     const [recipes, setRecipes] = useState([]);
-    const searchParams = query(collection(db, "Recipes"));
-    
+
     useEffect(() => {
       const doFetch = async() => {
+        const searchParams = query(collection(db, "Recipes"));
         const querySnapshot = await getDocs(searchParams);
-        
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data())
-          setRecipes(...recipes => [...recipes, doc.data()]);
-          //setRecipes([...recipes, doc.data()]);
-        });
-        //console.log(querySnapshot)
+        return querySnapshot.docs.map((recipe) => recipe.data());
       }
-      doFetch().catch((err) => {
+      doFetch().then((recipe_data) => {
+        setRecipes(recipe_data);
+      }).catch((err) => {
+
         console.log(err);
-      })
+      });
     }, []);
   
     function handleClick() {
-        console.log(recipes)
-      }
+      console.log(recipes)
+    }
   return (
     <div>
-        
-      <button onClick={handleClick}>show</button>
+      {(recipes.length > 0) ? recipes.map((recipe, idx) => (
+        <div key={idx}>
+          <a href={`recipe/${recipe.name.replaceAll(' ', '_')}`}><h2 >{recipe.name}</h2></a>
+        </div>
+      
+      )) : <h2>Loading...</h2>}
     </div>
   )
 }
